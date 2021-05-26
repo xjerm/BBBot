@@ -1,11 +1,13 @@
-# RTX 3070 Best Buy Bot
+# BBBot
+
+Forked from nickconnors' original master
 
 ## Features
 - Refreshes link until "Add to Cart" button is available
 - Automate entire checkout process
 
 ## Prerequisites
-- Sign up for a Best Buy account
+- Sign up for a BB account
 - Add all billing/shipping info to your account (must only have one card on the account)
 
 ## Dependencies
