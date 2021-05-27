@@ -5,21 +5,28 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import info
 
-# make sure this path is correct
-PATH = "" #insert chromedriver.exe path here
+# Here is where you have to customize your ChromeDriver.exe path
+PATH = ""
 
 driver = webdriver.Chrome(PATH)
 
-TARGET = "" #insert target URL here
+#Here is where the target URL goes.
+TARGET = ""
 
 driver.get(TARGET)
 
 isComplete = False
 
+#=============
+#Version 3
+#=============
+
+waitTime = 7 #Change this to however long you want the webDriver to wait before exception
+# 7 is recommended but lower number means you have faster internet/loading speed
 while not isComplete:
     # We are trying to find the add to cart button
     try:
-        atcBtn = WebDriverWait(driver, 8).until(
+        atcBtn = WebDriverWait(driver, waitTime).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, ".add-to-cart-button"))
         )
     except:
@@ -35,7 +42,7 @@ while not isComplete:
         # Go to cart and checkout as guest assuming no sign in the first time
         driver.get("https://www.bestbuy.com/cart")
 
-        checkoutBtn = WebDriverWait(driver, 10).until(
+        checkoutBtn = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-lg.btn-block.btn-primary"))
         )
         checkoutBtn.click()
@@ -47,18 +54,18 @@ while not isComplete:
     
     try:
         # Signing in process starts here
-        emailField = WebDriverWait(driver, 10).until(
+        emailField = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.ID, "fld-e"))
         )
         emailField.send_keys(info.email)
 
-        pwField = WebDriverWait(driver, 10).until(
+        pwField = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.ID, "fld-p1"))
         )
         pwField.send_keys(info.password)
 
         # We're clicking the sign in button, but if it's not found we just assume that we're signed in already
-        signInBtn = WebDriverWait(driver, 10).until(
+        signInBtn = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-secondary.btn-lg.btn-block.c-button-icon.c-button-icon-leading.cia-form__controls__submit"))
         )
         signInBtn.click()
@@ -68,7 +75,7 @@ while not isComplete:
 
     try:
         # fill in card cvv
-        cvvField = WebDriverWait(driver, 10).until(
+        cvvField = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.ID, "credit-card-cvv"))
         )
         cvvField.send_keys(info.cvv)
@@ -78,7 +85,7 @@ while not isComplete:
     
     try:
         # place order
-        placeOrderBtn = WebDriverWait(driver, 10).until(
+        placeOrderBtn = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-lg.btn-block.btn-primary.button__fast-track"))
         )
         placeOrderBtn.click()
