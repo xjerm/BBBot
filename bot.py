@@ -6,44 +6,47 @@ from selenium.webdriver.support import expected_conditions as EC
 import info
 
 # make sure this path is correct
-# REPLACE THIS FILE PATH
-PATH = "C:\BestBuyBot\chromedriver_win32\chromedriver.exe"
+PATH = "" #insert chromedriver.exe path here
 
 driver = webdriver.Chrome(PATH)
 
-#REPLACE THIS TO WHATEVER YOU WANT TO BUY
-TARGET = "https://www.bestbuy.com/site/insignia-indoor-hdtv-antenna-black/8233003.p?skuId=8233003"
+TARGET = "" #insert target URL here
 
 driver.get(TARGET)
 
 isComplete = False
 
 while not isComplete:
-    # find add to cart button
+    # We are trying to find the add to cart button
     try:
-        atcBtn = WebDriverWait(driver, 10).until(
+        atcBtn = WebDriverWait(driver, 8).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, ".add-to-cart-button"))
         )
     except:
         driver.refresh()
         continue
 
-    print("Add to cart button found")
+    print("SUCCESS: Add to cart button found")
 
     try:
-        # add to cart
+        # Add to cart here
         atcBtn.click()
 
-        # go to cart and begin checkout as guest
+        # Go to cart and checkout as guest assuming no sign in the first time
         driver.get("https://www.bestbuy.com/cart")
 
         checkoutBtn = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-lg.btn-block.btn-primary"))
         )
         checkoutBtn.click()
-        print("Successfully added to cart - beginning check out")
-
-        # fill in email and password
+        print("SUCCESS: Successfully added to cart - beginning check out")
+    except:
+        print("ERROR: Something wrong with adding to cart and checking out - resetting")
+        driver.get(TARGET)
+        continue
+    
+    try:
+        # Signing in process starts here
         emailField = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "fld-e"))
         )
@@ -54,20 +57,26 @@ while not isComplete:
         )
         pwField.send_keys(info.password)
 
-        # click sign in button
+        # We're clicking the sign in button, but if it's not found we just assume that we're signed in already
         signInBtn = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-secondary.btn-lg.btn-block.c-button-icon.c-button-icon-leading.cia-form__controls__submit"))
         )
         signInBtn.click()
-        print("Signing in")
+        print("SUCCESS: Signing in")
+    except:
+        print("EXCEPTION: Sign in process failed, could be because we're signed in already, continuing on")
 
+    try:
         # fill in card cvv
         cvvField = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.ID, "credit-card-cvv"))
         )
         cvvField.send_keys(info.cvv)
-        print("Attempting to place order")
-
+        print("SUCESS: CVV Inserted")
+    except:
+        print("EXCEPTION: Can't put down CVV, maybe BB didn't ask for it this time, continuing on")
+    
+    try:
         # place order
         placeOrderBtn = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-lg.btn-block.btn-primary.button__fast-track"))
@@ -78,7 +87,7 @@ while not isComplete:
     except:
         # make sure this link is the same as the link passed to driver.get() before looping
         driver.get(TARGET)
-        print("Error - restarting bot")
+        print("ERROR: Final Checkout process not working")
         continue
 
-print("Order successfully placed")
+print("SUCCESS: Order successfully placed")
