@@ -5,24 +5,26 @@ from selenium.webdriver.support import expected_conditions as EC
 
 import info
 
-# Here is where you have to customize your ChromeDriver.exe path
-PATH = ""
+# ===============================
+# Put your information here
+PATH = "" #Path is the path of your chromedriver.exe
+TARGET = "" #Target is the target URL of the Best Buy Product to buy
+waitTime = 7 #Change this to however long you want the webDriver to wait before exception (7 recommended)
+testingMode = 0
+
+#Testing mode 0 means that you will actually checkout the item
+#Testing mode 1 will print to console as if it was to checkout, but won't check out.
+
+
+#=============
+#Version 4
+#=============
 
 driver = webdriver.Chrome(PATH)
-
-#Here is where the target URL goes.
-TARGET = ""
-
 driver.get(TARGET)
 
 isComplete = False
 
-#=============
-#Version 3
-#=============
-
-waitTime = 7 #Change this to however long you want the webDriver to wait before exception
-# 7 is recommended but lower number means you have faster internet/loading speed
 while not isComplete:
     # We are trying to find the add to cart button
     try:
@@ -38,6 +40,10 @@ while not isComplete:
     try:
         # Add to cart here
         atcBtn.click()
+        
+        gtcButton = WebDriverWait(driver, waitTime).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".go-to-cart-button"))
+        )
 
         # Go to cart and checkout as guest assuming no sign in the first time
         driver.get("https://www.bestbuy.com/cart")
@@ -88,7 +94,13 @@ while not isComplete:
         placeOrderBtn = WebDriverWait(driver, waitTime).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, ".btn.btn-lg.btn-block.btn-primary.button__fast-track"))
         )
-        placeOrderBtn.click()
+        
+        if testingMode == 0:
+            placeOrderBtn.click()
+        elif testingMode == 1:
+            print("Checkout simulated")
+        else:
+            print("Testing Mode not set correctly")
 
         isComplete = True
     except:
